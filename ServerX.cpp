@@ -64,6 +64,7 @@ void *ReadFromClient(void *p) {
                 cout << prompt << "\n";
                 sendToClients(k, clients, clientNames, src, prompt.c_str(), 2);
                 excludedList.insert(src);
+                close(clients[src]);
                 break;
             }
             sendToClients(k, clients, clientNames, src, buff);
@@ -120,11 +121,15 @@ int main(int argc, char **argv) {
         pthread_create(&tids_recv[i], &attrs_recv[i], ReadFromClient, &myArgs);
     }
 
+    close(sockfd);
     for (int i = 0; i < k; ++i) {
         pthread_join(tids_recv[i], NULL);
     }
 
-    close(sockfd);
+    for (int i = 0; i < k; ++i) {
+        close(newfds[i]);
+    }
+
 
     return 0;
 }
