@@ -78,8 +78,8 @@ int main(int argc, char **argv) {
     port = argv[2];
 
     addrinfo hints, *res;
+    memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_INET;
-    hints.ai_protocol = 0;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
