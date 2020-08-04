@@ -2,13 +2,12 @@
 
 #include <iostream>
 #include <sys/types.h>
-#include <Ws2tcpip.h>
-
+#include <WS2tcpip.h>
 #include <string>
 #include <cstring>
+
 #include <vector>
 #include <thread>
-
 #include <set>
 
 #define BACKLOG 127
@@ -80,8 +79,8 @@ int main(int argc, char** argv) {
     WSAStartup(MAKEWORD(2, 2), &wsData);
 
     addrinfo hints, * res;
+    memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_INET;
-    hints.ai_protocol = 0;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
@@ -97,7 +96,6 @@ int main(int argc, char** argv) {
     socklen_t their_sizes[BACKLOG];
 
     thread t[BACKLOG];
-
     string clientNames[BACKLOG];
 
     for (int i = 0; i < BACKLOG; ++i) {
@@ -118,8 +116,8 @@ int main(int argc, char** argv) {
 
         t[i] = thread(ReadFromClient, &myArgs);
     }
-    closesocket(sockfd);
 
+    closesocket(sockfd);
     for (int i = 0; i < k; ++i) {
         t[i].join();
     }
@@ -127,6 +125,8 @@ int main(int argc, char** argv) {
     for (int i = 0; i < k; ++i) {
         closesocket(newfds[i]);
     }
+
     WSACleanup();
+
     return 0;
 }
