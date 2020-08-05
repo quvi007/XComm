@@ -76,7 +76,6 @@ void *ReadFromClient(void *p) {
 int main(int argc, char **argv) {
     serverName = argv[1];
     port = argv[2];
-
     addrinfo hints, *res;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_INET;
@@ -108,7 +107,12 @@ int main(int argc, char **argv) {
         char tBuff[256]{0};
         int rbSizeF = recv(newfds[i], tBuff, sizeof tBuff, 0);
         clientNames[i] = string(tBuff, 0, rbSizeF);
-        string prompt = "\"" + clientNames[i] + "\" connected to the server";
+        char theirIpBuff[INET_ADDRSTRLEN]{0};
+        string clientIp;
+        inet_ntop(AF_INET, &(their_addresses[i].sin_addr.s_addr), theirIpBuff, sizeof theirIpBuff);
+        clientIp = string(theirIpBuff, 0, strlen(theirIpBuff));
+        int theirPort = ntohs(their_addresses[i].sin_port);
+        string prompt = "\"" + clientNames[i] + "\" connected to the server from IP " + clientIp + ":" + to_string(theirPort);
         cout << prompt << "\n";
         k++;
         sendToClients(&k, newfds, clientNames, i, prompt.c_str(), 1);
